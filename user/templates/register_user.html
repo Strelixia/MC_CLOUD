@@ -1,0 +1,20 @@
+{% load static %}
+<h1> Bienvenu sur notre site, identifiez-vous pour vous connecter</h1>
+{% if user.is_authenticated %}
+    You are connected, {{user.username}}
+{% else %}
+    <form method="post" action=".">{% csrf_token %}
+        <label for="username"> Username</label>
+        <input type="text" name="username" required>
+        <label for ="email"> Email</label>
+        <input type="email" name="email" required>
+        <label for="password"> Password</label>
+        <input type="password" name="password" required>
+        <button type="submit" > Connexion </button>
+    </form>
+{% endif %}
+
+
+
+
+

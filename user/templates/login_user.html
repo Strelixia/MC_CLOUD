@@ -1,0 +1,19 @@
+{% load static %}
+<h1> Connectez-vous</h1>
+
+{% if messages %}   
+    {% for message in messages %}
+        <p class="{{messages.tags}} notification">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<div>
+    <form method="post" action=".">{% csrf_token %}
+        <label for ="username"> Username</label>
+        <input type="username" name="username" required>
+        <label for ="password"> Password</label>
+        <input type="password" name="password" required>
+        <button type="submit" > Connexion </button>
+    </form>
+    <p>Mot de passe oublié? <a href="{% url 'forgot_password' %}">Recupérer avec adress email</a></p>
+</div>

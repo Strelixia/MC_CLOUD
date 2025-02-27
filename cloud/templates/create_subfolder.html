@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+        <h2>Créer un sous-dossier sous "{{ parent.name }}"</h2>
+    <form method="POST" action="">{% csrf_token %}
+        <label for="name">Nom du sous-dossier :</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">Créer le sous-dossier</button>
+    </form>
+    <a href="{% url 'dashboard' %}">Retour au tableau de bord</a>
+</body>
+
+</html>

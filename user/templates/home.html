@@ -1,0 +1,14 @@
+{% load static %}
+<html>
+    <body>
+        <h1>Connectez-vous</h1>
+        <div>
+            <form method="" action="{% url 'login' %}">{% csrf_token %}
+                <button type="submit" class="btn btn-primary"> Login </button>
+            </form>
+            <form method="" action="{% url 'register' %}">{% csrf_token %}
+                <button type="submit" class="btn btn-primary"> Register </button>
+            </form>
+        </div>
+    </body>
+</html>

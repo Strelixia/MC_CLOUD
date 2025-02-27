@@ -1,0 +1,17 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+ </head>
+ <body>
+    <form>
+        <h2>Dossier: {{folder.name}}</h2>
+        <ul>{% for file in files %}
+            <li><a href="{{file.fules.url}}">{{file.name}}</a> (Ajouté le {{ file.uploaded_at}})</li>
+            {% empty %}
+            <li>Aucun fichier dans ce dossier.</li>
+            {% endfor %}
+        </ul>
+    
+    </form>
+ </body>
+ </html>
