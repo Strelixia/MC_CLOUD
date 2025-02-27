@@ -14,13 +14,17 @@ import datetime
 def dashboard(request):
     # Récupère le dossier personnel de l'utilisateur (créé à la connexion via le signal)
     folder = get_object_or_404(Folder, user=request.user)
+
+    # Récupérer aussi les sous-dossiers pour chaque dossier principal
+    subfolders = Folder.objects.filter(user=request.user).exclude(parent=None)
     
     # Si vous conservez les enregistrements des fichiers dans votre base de données :
     files = folder.files.all()
     
     return render(request, 'dashboard.html', {
         'folder': folder,
-        'files': files
+        'files': files,
+        'subfolders': subfolders,
     })
 
 
@@ -62,10 +66,13 @@ def create_subfolder(request, parent_id):
     if request.method == "POST":
         subfolder_name = request.POST.get("name")
         if subfolder_name:
-            Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
-            return redirect('dashboard')
-    folder=Folder.objects.all()
-    return render(request, 'create_subfolder.html', {'parent': parent, 'folder': folder})
+            # Vérifier si le sous-dossier existe déjà
+            existing_folder = Folder.objects.filter(user=request.user, name=subfolder_name, parent=parent).first()
+            if not existing_folder:
+                # Créer le sous-dossier
+                Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
+        return('dashboard')
+    return render(request, 'create_subfolder.html', {'parent': parent})
 
 
 @login_required
