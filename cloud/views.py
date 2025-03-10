@@ -12,13 +12,10 @@ import datetime
 
 @login_required
 def dashboard(request):
-    # Récupère le dossier personnel de l'utilisateur (créé à la connexion via le signal)
     folder = get_object_or_404(Folder, user=request.user)
 
-    # Récupérer aussi les sous-dossiers pour chaque dossier principal
     subfolders = Folder.objects.filter(user=request.user).exclude(parent=None)
     
-    # Si vous conservez les enregistrements des fichiers dans votre base de données :
     files = folder.files.all()
     
     return render(request, 'dashboard.html', {

@@ -27,6 +27,22 @@
             {% endif %}
         {% endfor %}
     </div>
+    { endif }
+
+    
+    {% for folder in folders %}
+    <div>
+        <h3>{{ folder.name }}</h3>
+        <ul>
+            {% for subfolder in subfolders %}
+                {% if subfolder.parent.id == folder.id %}
+                    <li>{{ subfolder.name }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+
     {% else %}
     <p>Aucun fichier n'a encore été téléversé.</p>
     {% endif %}
