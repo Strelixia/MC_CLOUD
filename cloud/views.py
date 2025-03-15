@@ -14,14 +14,17 @@ import datetime
 def dashboard(request):
     folder = get_object_or_404(Folder, user=request.user)
 
-    subfolders = Folder.objects.filter(user=request.user).exclude(parent=None)
+    subfolders = Folder.objects.filter(user=request.user, parent=folder)
     
     files = folder.files.all()
+
+    form = FileUploadForm()
     
     return render(request, 'dashboard.html', {
         'folder': folder,
         'files': files,
         'subfolders': subfolders,
+        'form': form
     })
 
 
@@ -52,9 +55,15 @@ def upload_file(request, folder_id):
                 }
             )
             return redirect('dashboard')
-    else:
-        form = FileUploadForm()
-    return render(request, 'upload_file.html', {'form': form, 'folder': folder})
+
+@login_required
+def delete_file(request):
+    if request.method == 'POST':
+        file_id = request.POST.get('file_id')
+        file = get_object_or_404(File, id=file_id)
+        file.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 @login_required
