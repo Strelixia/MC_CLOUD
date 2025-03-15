@@ -77,7 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MC_CLOUD.wsgi.application'
 ASGI_APPLICATION = 'MC_CLOUD.routing.application'
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = '/cloud/dashboard/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 AUTH_USER_MODEL = "user.User"
 
@@ -153,10 +153,16 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 # Configuration de cloudinary
-CLOUDINARY_STORAGE ={
+CLOUDINARY_STORAGE = {
     'CLOUD_NAME' : config('CLOUD_NAME', default = ''),
-    'API_KEY' : config('API_kEY', default = ''),
+    'API_KEY' : config('API_KEY', default = ''),
     'API_SECRET' : config('API_SECRET', default = ''),
 }
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+)
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
