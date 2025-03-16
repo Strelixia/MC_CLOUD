@@ -9,11 +9,14 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import datetime
 from redis.exceptions import ConnectionError
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
 
 
 @login_required
 def dashboard(request):
-    folder = get_object_or_404(Folder, user=request.user)
+    folder = get_object_or_404(Folder, user=request.user, parent=None)
 
     subfolders = Folder.objects.filter(user=request.user, parent=folder)
     
@@ -70,19 +73,19 @@ def delete_file(request):
     return JsonResponse({'success': False})
 
 
-@login_required
-def create_subfolder(request, parent_id):
-    parent = get_object_or_404(Folder, id=parent_id, user=request.user)
-    if request.method == "POST":
-        subfolder_name = request.POST.get("name")
-        if subfolder_name:
-            # Vérifier si le sous-dossier existe déjà
-            existing_folder = Folder.objects.filter(user=request.user, name=subfolder_name, parent=parent).first()
-            if not existing_folder:
-                # Créer le sous-dossier
-                Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
-        return('dashboard')
-    return render(request, 'create_subfolder.html', {'parent': parent})
+# @login_required
+# def create_subfolder(request, parent_id):
+#     parent = get_object_or_404(Folder, id=parent_id, user=request.user)
+#     if request.method == "POST":
+#         subfolder_name = request.POST.get("name")
+#         if subfolder_name:
+#             # Vérifier si le sous-dossier existe déjà
+#             existing_folder = Folder.objects.filter(user=request.user, name=subfolder_name, parent=parent).first()
+#             if not existing_folder:
+#                 # Créer le sous-dossier
+#                 Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
+#         return('dashboard')
+#     return render(request, 'create_subfolder.html', {'parent': parent})
 
 
 @login_required
@@ -91,3 +94,24 @@ def upload_file_selection(request):
     if folder_id:
         return redirect('upload_file', folder_id=folder_id)
     return redirect('dashboard')
+
+
+@login_required
+@csrf_exempt
+def create_subfolder_ajax(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        parent_id = data.get('parent_id')
+        subfolder_name = data.get('name')
+        parent = get_object_or_404(Folder, id=parent_id, user=request.user)
+        if subfolder_name:
+            existing_folder = Folder.objects.filter(user=request.user, name=subfolder_name, parent=parent).first()
+            if not existing_folder:
+                new_folder = Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
+                # Upload a placeholder file to create the folder on Cloudinary
+                cloudinary.uploader.upload(
+                    "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+                    folder=new_folder.full_path()
+                )
+                return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
