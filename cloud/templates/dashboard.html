@@ -72,7 +72,12 @@
         {% endfor %}
     {% endif %}
 
-    <h1>Bienvenue, {{ request.user.username }}</h1>
+    <div style="display:flex; justify-content: start; gap: 15px; align-items: center;">
+        <h1>Bienvenue, {{ request.user.username }}</h1>
+        <form class="action-btn" method="post" action="{% url 'logout' %}">{% csrf_token %} 
+            <button type="submit" class="btn btn-danger">Logout</button> 
+        </form>
+    </div>
     <div style="display: flex; gap: 20px; align-items: center;">
         <h2>Location: {{ folder.full_path }}</h2>
         <form method="get" action="{% url 'create_subfolder' folder.id %}">
@@ -110,18 +115,11 @@
     {% endif %}
     
     <h3>Upload a file</h3>
-    <div>
-        <form method="POST" action="{% url 'upload_file' folder.id %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Upload</button>
-        </form>  
-    </div>
-    <div>
-        <form class="action-btn" method="post" action="{% url 'logout' %}">{% csrf_token %} 
-            <button type="submit" class="btn btn-danger">Logout</button> 
-        </form>
-    </div>
+    <form method="POST" action="{% url 'upload_file' folder.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
 </body>
 <script>
     const socket = new WebSocket('ws://' + window.location.host + '/ws/dashboard/');

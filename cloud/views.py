@@ -8,6 +8,7 @@ from .forms import FileUploadForm
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import datetime
+from redis.exceptions import ConnectionError
 
 
 @login_required
@@ -47,13 +48,16 @@ def upload_file(request, folder_id):
             new_file.save()
             # Envoi d'une notification au groupe de l'utilisateur via Channels
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"user_{request.user.id}",
-                {
-                    "type": "send_update",
-                    "message": "Nouveau fichier téléversé"
-                }
-            )
+            try:
+                async_to_sync(channel_layer.group_send)(
+                    f"user_{request.user.id}",
+                    {
+                        "type": "send_update",
+                        "message": "Nouveau fichier téléversé"
+                    }
+                )
+            except ConnectionError:
+                messages.error(request, "Failed to send notification. Redis server might be down.")
             return redirect('dashboard')
 
 @login_required
