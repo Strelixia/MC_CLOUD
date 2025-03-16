@@ -38,18 +38,17 @@ def upload_file(request, folder_id):
     if request.method == "POST":
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            # Téléverse le fichier sur Cloudinary dans un dossier spécifique
             uploaded = cloudinary.uploader.upload(
                 request.FILES['file'],
                 folder=folder.full_path() 
             )
-            # Crée un nouvel enregistrement File avec les données téléversées
+
             new_file = form.save(commit=False)
             new_file.folder = folder
             new_file.name = form.cleaned_data['name']
-            new_file.file = uploaded.get('public_id')  # Vous pouvez stocker le public_id ou l'URL selon vos besoins
+            new_file.file = uploaded.get('public_id')
             new_file.save()
-            # Envoi d'une notification au groupe de l'utilisateur via Channels
+
             channel_layer = get_channel_layer()
             try:
                 async_to_sync(channel_layer.group_send)(
@@ -63,42 +62,24 @@ def upload_file(request, folder_id):
                 messages.error(request, "Failed to send notification. Redis server might be down.")
             return redirect('dashboard')
 
+
 @login_required
 def delete_file(request):
     if request.method == 'POST':
-        file_id = request.POST.get('file_id')
+        file_id = json.loads(request.body).get('file_id')
         file = get_object_or_404(File, id=file_id)
-        file.delete()
-        return JsonResponse({'success': True})
+        try:
+            cloudinary.uploader.destroy(file.file.public_id)
+            file.delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False})
-
-
-# @login_required
-# def create_subfolder(request, parent_id):
-#     parent = get_object_or_404(Folder, id=parent_id, user=request.user)
-#     if request.method == "POST":
-#         subfolder_name = request.POST.get("name")
-#         if subfolder_name:
-#             # Vérifier si le sous-dossier existe déjà
-#             existing_folder = Folder.objects.filter(user=request.user, name=subfolder_name, parent=parent).first()
-#             if not existing_folder:
-#                 # Créer le sous-dossier
-#                 Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
-#         return('dashboard')
-#     return render(request, 'create_subfolder.html', {'parent': parent})
-
-
-@login_required
-def upload_file_selection(request):
-    folder_id = request.GET.get('folder_id')
-    if folder_id:
-        return redirect('upload_file', folder_id=folder_id)
-    return redirect('dashboard')
 
 
 @login_required
 @csrf_exempt
-def create_subfolder_ajax(request):
+def create_subfolder(request):
     if request.method == "POST":
         data = json.loads(request.body)
         parent_id = data.get('parent_id')
@@ -108,10 +89,25 @@ def create_subfolder_ajax(request):
             existing_folder = Folder.objects.filter(user=request.user, name=subfolder_name, parent=parent).first()
             if not existing_folder:
                 new_folder = Folder.objects.create(user=request.user, name=subfolder_name, parent=parent)
-                # Upload a placeholder file to create the folder on Cloudinary
+
                 cloudinary.uploader.upload(
                     "https://res.cloudinary.com/demo/image/upload/sample.jpg",
                     folder=new_folder.full_path()
                 )
                 return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+
+
+@login_required
+def folder_detail(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, user=request.user)
+    subfolders = Folder.objects.filter(user=request.user, parent=folder)
+    files = folder.files.all()
+    form = FileUploadForm()
+
+    return render(request, 'folder_detail.html', {
+        'folder': folder,
+        'files': files,
+        'subfolders': subfolders,
+        'form': form
+    })

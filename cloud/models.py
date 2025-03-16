@@ -17,7 +17,7 @@ class Folder(models.Model):
     
     def full_path(self):
         if self.parent:
-            return f"{self.parent.full_path()}/{self.name}"
+            return f"{self.parent.full_path()} > {self.name}"
         return self.name
 
 class File(models.Model):
