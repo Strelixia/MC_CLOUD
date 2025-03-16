@@ -1,17 +1,43 @@
- <!DOCTYPE html>
- <html lang="en">
- <head>
- </head>
- <body>
-    <form>
-        <h2>Dossier: {{folder.name}}</h2>
-        <ul>{% for file in files %}
-            <li><a href="{{file.fules.url}}">{{file.name}}</a> (Ajouté le {{ file.uploaded_at}})</li>
-            {% empty %}
-            <li>Aucun fichier dans ce dossier.</li>
-            {% endfor %}
-        </ul>
-    
+{% extends "base.html" %}
+{% block title %}Folder Detail{% endblock %}
+{% block content %}
+<ul class="folder-list">
+    {% for subfolder in subfolders %}
+        <li class="folder-item">
+            <a href="{% url 'folder_detail' subfolder.id %}" class="folder-link">{{ subfolder.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+{% if files %}
+    <div class="mosaic-container">
+        {% for file in files %}
+            {% if file.file.url %}
+                <a href="{{ file.file.url }}" class="file-container">
+                    <img class="image" src="{{ file.file.url }}" />
+                    <div class="overlay">
+                        <button class="delete-btn" onclick="deleteFile('{{ file.id }}'); return false;">Delete</button>
+                        <div class="file-info">
+                            <p class="file-name">{{ file.name }}</p>
+                            <p class="file-date">{{ file.uploaded_at }}</p>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div>
+        <p>No files</p>
+    </div>
+{% endif %}
+
+<div style="margin-top: 15px;">
+    <h3>Upload a file</h3>
+    <form method="POST" action="{% url 'upload_file' folder.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
     </form>
- </body>
- </html>
+</div>
+{% endblock %}
