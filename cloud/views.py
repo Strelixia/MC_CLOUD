@@ -61,6 +61,9 @@ def upload_file(request, folder_id):
             except ConnectionError:
                 messages.error(request, "Failed to send notification. Redis server might be down.")
             return redirect('dashboard')
+        else:
+            messages.error(request, "File upload failed. Ensure the file is an image and less than 10MB.")
+    return redirect('dashboard')
 
 
 @login_required
