@@ -40,11 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    
     'user.apps.UserConfig',
     'cloudinary',
     'cloudinary_storage',
     'cloud',
     'channels',
+    'collaboration',
 ]
 
 MIDDLEWARE = [
@@ -146,7 +149,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuration de la fonctionnalité d'envoi des emails
+
 EMAIL_BACKEND =config('EMAIL_BACKEND', default = 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = config('EMAIL_HOST', default = 'localhost')
 EMAIL_PORT =  config('EMAIL_PORT', cast = int, default = 25)
@@ -156,7 +159,7 @@ DEFAULT_FROM_EMAIL =config('DEFAULT_FROM_EMAIL', default = 'webmaster@localhost.
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-# Configuration de cloudinary
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME' : config('CLOUD_NAME', default = ''),
     'API_KEY' : config('API_KEY', default = ''),
