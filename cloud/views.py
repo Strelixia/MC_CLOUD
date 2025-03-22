@@ -114,3 +114,9 @@ def folder_detail(request, folder_id):
         'subfolders': subfolders,
         'form': form
     })
+
+
+@login_required
+def collaboration(request):
+    if request.method=='POST':
+        
