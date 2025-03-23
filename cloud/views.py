@@ -115,8 +115,4 @@ def folder_detail(request, folder_id):
         'form': form
     })
 
-
-@login_required
-def collaboration(request):
-    if request.method=='POST':
         
