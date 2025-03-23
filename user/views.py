@@ -62,8 +62,7 @@ def forgot_password(request):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             reset_url = request.build_absolute_uri(
-                reverse('reset_password', kwargs={'uidb64': uid, 'token': token})
-            )
+                reverse('reset_password', kwargs={'uidb64': uid, 'token': token}))
 
             send_email(user, settings.DEFAULT_FROM_EMAIL, subject="Reset Password", template_name="email/send_reset_link.html", reset_url=reset_url)
             messages.success(request, "We have sent a reset link to your email!")
