@@ -10,8 +10,8 @@ class Collaboration(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Invitation(models.Model):
-    email= models.CharField(max_length= 255)
-    status= models.CharField(max_length= 8, choices= [('ACCEPTED','accepted'),('REFUSED','refused')])
+    collaborator= models.CharField(max_length= 255)
+    status= models.CharField(max_length= 8, choices= [('PENDING','pending'),('ACCEPTED','accepted'),('REFUSED','refused')])
     owner=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     folder=models.ForeignKey(Folder, on_delete=models.CASCADE)
 
