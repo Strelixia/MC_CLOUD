@@ -17,8 +17,8 @@
 
     <div class="header">
         <h1>Bienvenue, {{ request.user.username }}</h1>
-        <form class="action-btn" method="post" action="{% url 'logout' %}">{% csrf_token %}
-            <button type="submit" class="btn btn-danger">make collab</button>
+        <form class="action-btn" method="get" action="{% url 'logout' %}">{% csrf_token %}
+            <button type="submit" class="btn btn-danger">Make collab</button>
         </form>
         <form class="action-btn" method="post" action="{% url 'logout' %}">{% csrf_token %}
             <button type="submit" class="btn btn-danger">Logout</button>
