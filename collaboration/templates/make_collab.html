@@ -1,7 +1,12 @@
-{% extends ".\cloud\templates\base.html" %}
-{% block title %}Invitation{% endblock %}
-{% block content %}
-    <h2>Collaboration email</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitation</title>
+</head>
+<body>
+  <h2>Collaboration email</h2>
     <form method="post">{% csrf_token %}
       <label for="email">Enter the email address of the collaborator:</label>
       <input type="email" name="email" required>
@@ -9,6 +14,9 @@
         {% for folder in folders %}
           <option value="{{ folder.id }}">{{ folder.name }}</option>
         {% endfor %}
-      <button type="submit">Send Email</button>
+      </select> 
+      <button type="submit">Send email</button>
     </form>
-{% endblock %}
+
+</body>
+</html>

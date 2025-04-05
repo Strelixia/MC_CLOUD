@@ -114,5 +114,4 @@ def folder_detail(request, folder_id):
         'subfolders': subfolders,
         'form': form
     })
-
-        
+ 

@@ -10,8 +10,8 @@ def send_email(owner, collaborator, subject, template_name, inviting_url):
     email = EmailMessage(
         subject = subject,
         body = email_html_content,
-        from_email = owner,
-        to =  [collaborator.email],
+        from_email = owner.email,
+        to =  [collaborator],
     )
 
     email.content_subtype = "html"

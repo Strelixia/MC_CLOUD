@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Choice</title>
+  </head>
+  <body>
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    <form method="get">{% csrf_token %}
+      <p>Accept collaboration invitation?<p>
+      <select name="status">
+        <option value="ACCEPTED">Yes</option>
+        <option value="REFUSED">No</option>
+      </select>
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>
