@@ -10,6 +10,7 @@ class User(AbstractUser):
     """
         Class User: username, email, password
     """
+    email = models.EmailField(unique=True)
     groups = models.ManyToManyField('auth.Group', related_name= 'custom_user_groups', blank=True)
     user_permissions = models.ManyToManyField('auth.Permission', related_name= 'custom_user_permissions', blank=True)
 
