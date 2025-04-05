@@ -17,9 +17,9 @@
     </form>
 
     <form method="get" action="{% url 'register' %}">
-        <input type="hidden" name="next" value="{{ next_url }}">
-        <button type="submit" class="btn btn-primary">Sign up</button>
-    </form>
+    <input type="hidden" name="next" value="{{ next_url }}">
+    <button type="submit" class="btn btn-primary">Sign up</button>
+</form>
 
     <p>Mot de passe oublié? <a href="{% url 'forgot_password' %}">Recupérer avec adress email</a></p>
 </div>
