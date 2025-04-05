@@ -3,8 +3,10 @@ from django.template.loader import render_to_string
 
 def send_email(owner, collaborator, subject, template_name, inviting_url):               
     email_html_content = render_to_string(template_name, {
-        'owner': owner.email,
-        'inviting_url': inviting_url
+        'owner_email': owner.email,
+        'owner_name': owner.username,
+        'inviting_url': inviting_url,
+        'collaborator': collaborator
     })
 
     email = EmailMessage(
