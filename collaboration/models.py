@@ -10,6 +10,7 @@ class Collaboration(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owned_collaborations", default=None)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name="share_collaborations")
     created_at = models.DateTimeField(auto_now_add=True)
+    permission = models.CharField(max_length=8, choices=[('READ','read'),('WRITE','write')], default='write')
 
 class Invitation(models.Model):
     collaborator_email = models.CharField(max_length= 255)

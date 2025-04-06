@@ -1,7 +1,7 @@
 from cloud.models import Folder
 from  .models import Invitation, Collaboration
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from functools import wraps
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -34,7 +34,9 @@ def make_collaboration(request):
     
     return render(request, 'make_collab.html', {'folders': Folder.objects.filter(user=request.user)})
 
+
 @login_required
+@permission_required
 def accept_invite(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
