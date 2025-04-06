@@ -16,19 +16,39 @@ def home(request):
     return render(request, 'home.html')
 
 def register_view(request):
+    # Store the 'next' parameter if it exists in the URL
+    next_url = request.GET.get('next', '')
+    if next_url:
+        request.session['next_url'] = next_url
+        
     if request.method== 'POST':
         username = request.POST.get("username")
         email= request.POST.get("email")
         password = request.POST.get("password")
         
-        User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(username=username, email=email, password=password)
         
+        # Log the user in immediately after registration
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            
+            # Redirect to stored next_url if it exists, otherwise to dashboard
+            next_url = request.session.get('next_url')
+            if next_url:
+                del request.session['next_url']
+                return redirect(next_url)
+            return redirect('dashboard')
+            
         return redirect('login')
 
-    return render (request, 'register_user.html')
+    return render(request, 'register_user.html', {'next_url': next_url})
 
 
 def login_view(request):
+    # Get next_url from URL parameters
+    next_url = request.GET.get('next', '')
+    
     if request.method== 'POST':
         username= request.POST.get("username")
         password = request.POST.get("password")
@@ -37,16 +57,21 @@ def login_view(request):
 
         if user is None:
             messages.error(request, "Invalid username or password")
-            return redirect('login')
+            # Preserve next parameter on error
+            return redirect(f"{reverse('login')}?next={next_url}" if next_url else 'login')
             
         login(request, user)
+        
+        # Redirect to next_url if it exists
+        if next_url:
+            return redirect(next_url)
         return redirect('dashboard')
 
     if request.user.is_authenticated:
-        messages.info(request, f"You are already connectes as, {request.user.username}")
+        messages.info(request, f"You are already connected as, {request.user.username}")
         return redirect('dashboard')
-            
-    return render (request, 'login_user.html')
+    
+    return render(request, 'login_user.html', {'next_url': next_url})
 
 @login_required
 def logout_view(request):

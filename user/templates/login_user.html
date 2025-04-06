@@ -1,5 +1,5 @@
 {% load static %}
-<h1> Connectez-vous</h1>
+<h1>Connectez-vous</h1>
 
 {% if messages %}   
     {% for message in messages %}
@@ -8,7 +8,7 @@
 {% endif %}
 
 <div>
-    <form method="post" action=".">{% csrf_token %}
+    <form method="post" action=".{% if next_url %}?next={{ next_url }}{% endif %}">{% csrf_token %}
         <label for ="username"> Username</label>
         <input type="username" name="username" required>
         <label for ="password"> Password</label>
@@ -16,9 +16,10 @@
         <button type="submit" > Connexion </button>
     </form>
 
-    <form method="" action="{% url 'register' %}">{% csrf_token %}
-        <button type="submit" class="btn btn-primary"> Sing up </button>
-    </form>
+    <form method="get" action="{% url 'register' %}">
+    <input type="hidden" name="next" value="{{ next_url }}">
+    <button type="submit" class="btn btn-primary">Sign up</button>
+</form>
 
     <p>Mot de passe oublié? <a href="{% url 'forgot_password' %}">Recupérer avec adress email</a></p>
 </div>
