@@ -11,6 +11,8 @@ class Collaboration(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name="share_collaborations")
     created_at = models.DateTimeField(auto_now_add=True)
     permission = models.CharField(max_length=8, choices=[('READ','read'),('WRITE','write')], default='write')
+    def __str__(self):
+        return f'{self.collaborator}| {self.folder} ({self.permission})'
 
 class Invitation(models.Model):
     collaborator_email = models.CharField(max_length= 255)
@@ -18,7 +20,8 @@ class Invitation(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    permission = models.CharField(max_length=8, choices=[('READ','read'),('WRITE','write')], default='write')
+    
     def generate_token(self):
         unique_string = f"{self.pk}{self.collaborator_email}{self.created_at}{settings.SECRET_KEY}"
         return hashlib.sha256(unique_string.encode()).hexdigest()
