@@ -12,6 +12,8 @@ from redis.exceptions import ConnectionError
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
+from .decorators import permission_required
+from django.http import HttpResponseForbidden
 
 
 @login_required
@@ -19,6 +21,8 @@ def dashboard(request):
     folder = get_object_or_404(Folder, user=request.user, parent=None)
 
     subfolders = Folder.objects.filter(user=request.user, parent=folder)
+
+    collaborations =  Folder.objects.filter(share_collaborations__collaborator=request.user)
     
     files = folder.files.all()
 
@@ -28,7 +32,8 @@ def dashboard(request):
         'folder': folder,
         'files': files,
         'subfolders': subfolders,
-        'form': form
+        'form': form,
+        'collaborations': collaborations
     })
 
 
@@ -102,16 +107,19 @@ def create_subfolder(request):
 
 
 @login_required
+@permission_required()
 def folder_detail(request, folder_id):
-    folder = get_object_or_404(Folder, id=folder_id, user=request.user)
-    subfolders = Folder.objects.filter(user=request.user, parent=folder)
+    folder = get_object_or_404(Folder, id=folder_id)
+    permission = request.user.get_folder_permission(folder)
+    print("Permission:", permission)
     files = folder.files.all()
-    form = FileUploadForm()
+    can_write = permission in ['owner', 'write']
+    form = FileUploadForm() if can_write else None
 
     return render(request, 'folder_detail.html', {
         'folder': folder,
         'files': files,
-        'subfolders': subfolders,
-        'form': form
+        'form': form,
+        'permission': permission,
+        'can_write':can_write,
     })
- 

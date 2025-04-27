@@ -15,7 +15,9 @@ class User(AbstractUser):
     user_permissions = models.ManyToManyField('auth.Permission', related_name= 'custom_user_permissions', blank=True)
 
     def get_folder_permission(self, folder):
-        collab = self.share_collaborations.filter(folder = folder).first()
+        if folder.user == self:
+            return 'owner' 
+        collab = self.collaborator_collaborations.filter(folder = folder).first()
         return collab.permission if collab else None
     
     def __str__(self):

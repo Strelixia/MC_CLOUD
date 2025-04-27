@@ -6,7 +6,7 @@ import uuid
 import hashlib
 
 class Collaboration(models.Model):
-    collaborator = models.ForeignKey(User, on_delete=models.CASCADE)
+    collaborator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="collaborator_collaborations")
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owned_collaborations", default=None)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name="share_collaborations")
     created_at = models.DateTimeField(auto_now_add=True)

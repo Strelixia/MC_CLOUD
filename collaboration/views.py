@@ -12,7 +12,7 @@ from django.urls import reverse
 from .utils import send_email
 from django.urls import reverse
 from django.utils.http import urlencode
-from .decorators import permission_required
+
 
 @login_required
 def make_collaboration(request):
@@ -37,13 +37,11 @@ def make_collaboration(request):
         send_email(owner, collaborator_email, subject="collaboration invitation", template_name="email/invitation_link.html", inviting_url=inviting_url)
         messages.success(request, "We have sent a inviting link to the collaborator email!")
         return redirect('make_collaboration')
-    readable_folders =  Folder.objects.filter(share_collaborations__collaborator=request.user, share_collaborations__permission ='read')
-    rwitten_folders = Folder.objects.filter(share_collaborations__collaborator=request.user, share_collaborations__permission ='write')
-    return render(request, 'make_collab.html', {'folders': Folder.objects.filter(user=request.user), 'readable_folders': readable_folders, 'rwitten_folders': rwitten_folders})
+    
+    return render(request, 'make_collab.html', {'folders': Folder.objects.filter(user=request.user)})
 
 
 @login_required
-@permission_required()
 def accept_invite(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -82,4 +80,5 @@ def accept_invite(request, uidb64, token):
 
     messages.error(request, "Invalid or expired invitation link.")
     return redirect('dashboard')
+
 

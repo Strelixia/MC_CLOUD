@@ -16,7 +16,9 @@
                 <a href="{{ file.file.url }}" class="file-container">
                     <img class="image" src="{{ file.file.url }}" />
                     <div class="overlay">
+                        {% if can_write %}
                         <button class="delete-btn" onclick="deleteFile('{{ file.id }}'); return false;">Delete</button>
+                        {% endif %}
                         <div class="file-info">
                             <p class="file-name">{{ file.name }}</p>
                             <p class="file-date">{{ file.uploaded_at }}</p>
@@ -32,12 +34,14 @@
     </div>
 {% endif %}
 
-<div style="margin-top: 15px;">
-    <h3>Upload a file</h3>
-    <form method="POST" action="{% url 'upload_file' folder.id %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
-</div>
+{% if can_write %}
+    <div style="margin-top: 15px;">
+        <h3>Upload a file</h3>
+        <form method="POST" action="{% url 'upload_file' folder.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+{% endif %}
 {% endblock %}

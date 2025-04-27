@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<ul class="folder-list">
+    {% for folder in subfolders %}
+        <li class="folder-item">
+            <a href="{% url 'folder_detail' folder.id %}" class="folder-link">{{ folder.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+{% if files %}
+    <div class="mosaic-container">
+        {% for file in files %}
+            {% if file.file.url %}
+                <a href="{{ file.file.url }}" class="file-container">
+                    <img class="image" src="{{ file.file.url }}" />
+                    <div class="overlay">
+                        <button class="delete-btn" onclick="deleteFile('{{ file.id }}'); return false;">Delete</button>
+                        <div class="file-info">
+                            <p class="file-name">{{ file.name }}</p>
+                            <p class="file-date">{{ file.uploaded_at }}</p>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div>
+        <p>No files</p>
+    </div>
+{% endif %}
+
+<div style="margin-top: 15px;">
+    <h3>Upload a file</h3>
+    <form method="POST" action="{% url 'upload_file' folder.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+</div>
+
+{% if collaboration %}
+    <div class="mosaic-container">
+        {% for folder in readable_folders %}
+        <li class="folder-item">
+            <a href="{% url 'folder_detail' folder.id %}" class="folder-link">{{ folder.name }}</a>
+        </li>
+            {% for file in files %}
+                <a href="{{ file.file.url }}" class="file-container">
+                    <img class="image" src="{{ file.file.url }}" />
+                    <div class="overlay">
+                        <button class="delete-btn" onclick="deleteFile('{{ file.id }}'); return false;">Delete</button>
+                        <div class="file-info">
+                            <p class="file-name">{{ file.name }}</p>
+                            <p class="file-date">{{ file.uploaded_at }}</p>
+                        </div>
+                    </div>
+                </a>
+        {% endfor %}
+        {% endfor %}
+    </div>
+    
+    <div class="mosaic-container">
+        {% for folder in rwitten_folders %}
+        <li class="folder-item">
+            <a href="{% url 'folder_detail' folder.id %}" class="folder-link">{{ folder.name }}</a>
+        </li>
+            {% for file in files %}
+                <a href="{{ file.file.url }}" class="file-container">
+                    <img class="image" src="{{ file.file.url }}" />
+                    <div class="overlay">
+                        <button class="delete-btn" onclick="deleteFile('{{ file.id }}'); return false;">Delete</button>
+                        <div class="file-info">
+                            <p class="file-name">{{ file.name }}</p>
+                            <p class="file-date">{{ file.uploaded_at }}</p>
+                        </div>
+                    </div>
+                </a>
+        {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
