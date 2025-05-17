@@ -22,10 +22,9 @@ def make_collaboration(request):
         permission = request.POST.get("permission")
         folder = Folder.objects.filter(id=folder_id).first()
         owner = request.user
-        
+        print("Permission avant invitation:",permission)
+
         invitation = Invitation.objects.create(collaborator_email = collaborator_email,status = "PENDING", owner = owner, folder = folder, permission = permission)
-        invitation.permission = permission
-        invitation.save()
 
         uid = urlsafe_base64_encode(force_bytes(invitation.pk))
         token = invitation.generate_token()
@@ -67,7 +66,8 @@ def accept_invite(request, uidb64, token):
         if request.method == "POST":
             status = request.POST.get("status")
             if status == "ACCEPTED":
-                Collaboration.objects.create(collaborator=request.user, owner=invitation.owner, folder=invitation.folder)
+                print("Permission avant collaboration:", invitation.permission)
+                Collaboration.objects.create(collaborator=request.user, owner=invitation.owner, folder=invitation.folder, permission=invitation.permission )
                 messages.success(request, "You have successfully joined the collaboration!")
             else:
                 messages.info(request, "You declined the invitation.")

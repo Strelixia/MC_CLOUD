@@ -17,18 +17,22 @@
 
     <div class="header">
         <h1>Bienvenue, {{ request.user.username }}</h1>
-        <form class="action-btn" method="get" action="{% url 'make_collaboration' %}">{% csrf_token %}
-            <button type="submit" class="btn btn-danger">Make collab</button>
-        </form>
-        <form class="action-btn" method="post" action="{% url 'logout' %}">{% csrf_token %}
-            <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
+        <div style="display: flex; gap: 10px;">
+            <form class="action-btn" method="get" action="{% url 'make_collaboration' %}">{% csrf_token %}
+                <button type="submit" class="btn btn-danger">Make collab</button>
+            </form>
+            <form class="action-btn" method="post" action="{% url 'logout' %}">{% csrf_token %}
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
     </div>
-
+    
     <div class="content">
         <div style="display: flex; gap: 20px; align-items: center;">
             <h2>Location: {{ folder.full_path }}</h2>
-            <button onclick="openSubfolderModal()">Create Subfolder</button>
+            {% if can_write is None or can_write is True %}
+                <button onclick="openSubfolderModal()">Create Subfolder</button>
+            {% endif %}
         </div>
         {% block content %}{% endblock %}
     </div>

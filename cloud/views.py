@@ -110,14 +110,16 @@ def create_subfolder(request):
 @permission_required()
 def folder_detail(request, folder_id):
     folder = get_object_or_404(Folder, id=folder_id)
+    subfolders = Folder.objects.filter(parent=folder)
     permission = request.user.get_folder_permission(folder)
-    print("Permission:", permission)
+    print("Permission après collaboration:", permission)
     files = folder.files.all()
     can_write = permission in ['owner', 'write']
     form = FileUploadForm() if can_write else None
 
     return render(request, 'folder_detail.html', {
         'folder': folder,
+        'subfolders': subfolders,
         'files': files,
         'form': form,
         'permission': permission,
